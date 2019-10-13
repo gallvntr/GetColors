@@ -1,0 +1,65 @@
+---
+title: "Colors"
+author: "Mark Gallivan"
+date: ""
+output: html_document
+---
+
+```{r setup}
+library(RColorBrewer)
+library(data.table)
+
+# color parameter options:  c("greys","blues","reds","greens","oranges","purples")
+getSeqColors <- function(color, N) {
+  colorRefDat <- data.table(colorSelect = 
+                              c("greys","blues","reds","greens","oranges","purples"), minCol = c("grey0","lightskyblue","indianred1","darkseagreen1","goldenrod1","lavender"), maxCol = 
+                              c("grey100","blue4","darkred","darkgreen","darkorange3","purple4"))
+  
+  shades <- colorRampPalette(c(colorRefDat[colorSelect == color]$minCol, 
+                               colorRefDat[colorSelect == color]$maxCol))
+  returnColors <- shades(N)
+  return(returnColors)
+}
+
+getQualColors <- function(n) {
+qual_col_pals = brewer.pal.info[brewer.pal.info$category == 'qual',]
+col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, 
+rownames(qual_col_pals)))
+return(col_vector)
+}
+
+```
+
+## The Problem
+
+I have a use case of showing many colors on the same graph. Many existing palettes are constrained to 8 or 12 colors. For example, R Color Brewer (RColorBrewer::display.brewer.all()) has palettes with only 10-12 colors.
+
+I would like an easy function that provides me with a unique palette of colors that are either sequential (c("light blue","blue","dark blue")) or categorical or qualitative (c("red","white","blue")).
+
+For more information on types of color palettes see http://colorbrewer2.org/learnmore/schemes_full.html
+
+## The Solution 
+
+Now let's to do a test for the sequential color palette. 
+
+```{r Sequential}
+
+## Sequential 
+colorVec <- getSeqColors("reds",20)
+getSeqColors("reds",20)
+mat <- matrix(rep(1:20, each = 20))
+image(mat, axes = FALSE, col = colorVec)
+
+```
+
+Now let's to do a test for the categorical or qualitative color palette. 
+
+```{r Categorical}
+colorVecQual <- getQualColors(n = 20)
+colorVecQual
+mat <- matrix(rep(1:20, each = 20))
+image(mat, axes = FALSE, col = colorVecQual)
+
+
+```
+
